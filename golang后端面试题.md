@@ -43,11 +43,16 @@
 ### slice 
 #### 怎么声明空数组，有什么区别
 ```go
-a := [...]int{}
-b := [0]int{}
-var c [0]int
-var d = [...]int{}
-fmt.Println(a == b, b == c, c == d) // true true true
+package main
+import "fmt"
+
+func main()  {
+   a := [...]int{}
+   b := [0]int{}
+   var c [0]int
+   var d = [...]int{}
+   fmt.Println(a == b, b == c, c == d) // true true true
+}
 ```
 #### 数组和切片的区别
     数组是值类型，切片是引用类型。切片可以动态伸缩。
@@ -56,28 +61,33 @@ fmt.Println(a == b, b == c, c == d) // true true true
 #### 截取切片的一部分赋给一个新的切片，修改这个新的切片其中的一个元素，那么原切片会被修改吗？对新的切片进行append操作，原切片会发生什么？
 ```go
 // append不导致原切片cap发生改变，则会改变原切片值
-a := make([]int, 10)
-for i := 0; i < 5; i++ {
-a[i] = i+1
-}
-b := a[2:4]
-b[0] = 10
-fmt.Println(cap(b))
-b = append(b, 9,29)
-fmt.Println(a) // [1 2 10 4 9 29 0 0 0 0]
-fmt.Println(b) // [10 4 9 29]
+package main
 
-// append 导致原切cap发生改变，新切片指向新数组
-a := make([]int, 5)
-for i := 0; i < 5; i++ {
-a[i] = i+1
+import "fmt"
+
+func main()  {
+   a := make([]int, 10)
+   for i := 0; i < 5; i++ {
+      a[i] = i+1
+   }
+   b := a[2:4]
+   b[0] = 10
+   fmt.Println(cap(b))
+   b = append(b, 9,29)
+   fmt.Println(a) // [1 2 10 4 9 29 0 0 0 0]
+   fmt.Println(b) // [10 4 9 29]
 }
-b := a[2:4]
-b[0] = 10
-fmt.Println(cap(b))
-b = append(b, 9,29)
-fmt.Println(a) // [1 2 10 4 5]
-fmt.Println(b) // [10 4 9 29]
+// append 导致原切cap发生改变，新切片指向新数组
+//a := make([]int, 5)
+//for i := 0; i < 5; i++ {
+//a[i] = i+1
+//}
+//b := a[2:4]
+//b[0] = 10
+//fmt.Println(cap(b))
+//b = append(b, 9,29)
+//fmt.Println(a) // [1 2 10 4 5]
+//fmt.Println(b) // [10 4 9 29]
 ```
 
 ### string
@@ -87,7 +97,6 @@ fmt.Println(b) // [10 4 9 29]
     不会， string类型底层包含[]byte类型。
 #### 字符串拼接相关，内存拷贝问题，如何高效拼接字符串
 
-
 ### struct
 #### 空结构体
     空结构体不占用内存，一般可以用来实现集合、控制协程并发和仅包含方法的结构体。
@@ -96,8 +105,23 @@ fmt.Println(b) // [10 4 9 29]
 
 ### 协程
 #### GMP模型以及数量关系
+1. GMP模型
+![GMP模型](./statics/GMP模型.jpeg)
+    - G: goroutine协程
+    - P: processor处理器(包含了G)
+    - M: 系统级线程, M关联一个KSE实体(即操作系统内核可调度的最小单位)
+2. 调度器策略
+![G调度流程](./statics/G调度流程.jpeg)
+    - 复用线程: 避免频繁创建、销毁线程。
+    - work stealing机制  
+         当本线程无可运行的 G 时，尝试从其他线程绑定的 P 偷取 G，而不是销毁线程。
+    - hand off机制  
+         当本线程因为 G 进行系统调用阻塞时，线程释放绑定的 P，把 P 转移给其他空闲的线程执行。
 #### 一个协程只会在一个processor上运行吗
+      不会
 #### 如何准确等待所有协程的结束
+   
+      
 #### 如何等待任意一个任务返回
 #### 如何控制多个协程(任务)同时结束
 
