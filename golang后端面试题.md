@@ -120,14 +120,99 @@ func main()  {
 #### 一个协程只会在一个processor上运行吗
       不会
 #### 如何准确等待所有协程的结束
-   
-      
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(a int) {
+			defer wg.Done()
+			fmt.Println(a)
+		}(i)
+	}
+	wg.Wait()
+}
+```
+
 #### 如何等待任意一个任务返回
+```go
+
+package main
+
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+)
+
+func Producer(factor int, out chan <- int) {
+	for i := 0; ; i++ {
+		out <- factor * i
+	}
+}
+func Consumer(in <-chan int) {
+	for v := range in {
+		fmt.Println(v)
+	}
+}
+
+func main() {
+	// 简单的生产者/消费者模型
+	// 成果队列
+	ch := make(chan int, 10)
+
+	// 两个生产者
+	go Producer(3, ch)
+	go Producer(5, ch)
+
+	// 一个消费者
+	go Consumer(ch)
+
+	// ctrl + c退出
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+	fmt.Printf("quit by (%v)\n", <-sig)
+}
+```
 #### 如何控制多个协程(任务)同时结束
-
+    
 #### 单例模式
+```go
+package main
 
+import (
+	"fmt"
+	"sync"
+)
 
+func main() {
+	// 单例模式
+	var once sync.Once
+
+	onceBody := func() {
+		fmt.Println("Only once")
+	}
+
+	done := make(chan struct{}, 10)
+
+	for i := 0; i < cap(done); i++ {
+		once.Do(onceBody)
+		done <- struct{}{}
+	}
+
+	for i := 0; i < cap(done); i++ {
+
+	}
+}
+```
 
 ### GC
 ### 内存逃逸，好处与坏处
