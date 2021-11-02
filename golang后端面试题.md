@@ -183,7 +183,6 @@ func main() {
 }
 ```
 #### 如何控制多个协程(任务)同时结束
-    
 #### 单例模式
 ```go
 package main
@@ -213,6 +212,50 @@ func main() {
 	}
 }
 ```
+### 发布订阅模型
+[发布者订阅者模型代码](./pubsub/pubsub.go)
+```go
+package main
 
+import (
+	"fmt"
+	"interview/pubsub"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+)
+
+func main() {
+	p := pubsub.NewPublisher(10, 100*time.Millisecond)
+	defer p.Close()
+	all := p.Subscribe()
+	filtrate := p.SubscribeTopic(func(v interface{}) bool {
+		if num, ok := v.(int); ok {
+			return num > 10
+		}
+		return false
+	})
+	go p.Publish(12)
+	go p.Publish(4)
+
+	go func() {
+		for v := range all {
+			fmt.Printf("all: %v\n", v)
+		}
+	}()
+
+	go func() {
+		for v := range filtrate {
+			fmt.Printf("more than 10 : %v\n", v)
+		}
+	}()
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+
+	fmt.Println("quit", <-sig)
+}
+```
 ### GC
 ### 内存逃逸，好处与坏处
