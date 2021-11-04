@@ -1,20 +1,19 @@
 package fcfs
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
 
-func searchByBing() interface{} {
+func searchByBing() string {
 	return "searchByBing"
 }
-func searchByGoogle() interface{} {
+func searchByGoogle() string {
 	return "searchByGoogle"
 }
 
-func FirstComeFirstServe() {
-	resp := make(chan interface{})
+func FirstComeFirstServe() string {
+	resp := make(chan string)
 	rand.Seed(time.Now().UnixNano())
 	go func() {
 		time.Sleep(time.Duration(rand.Intn(1000)))
@@ -24,7 +23,5 @@ func FirstComeFirstServe() {
 		time.Sleep(time.Duration(rand.Intn(1000)))
 		resp <- searchByGoogle()
 	}()
-
-	result, _ := (<-resp).(string)
-	fmt.Println(result)
+	return <-resp
 }
