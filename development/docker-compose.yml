@@ -1,0 +1,49 @@
+version: '2.1'
+
+services:
+  mysql:
+    image: bitnami/mysql
+    container_name: mysql
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/bitnami/mysql/data
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - MYSQL_ROOT_PASSWORD=root123
+    healthcheck:
+      test: ['CMD', '/opt/bitnami/scripts/mysql/healthcheck.sh']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  etcd:
+    image: bitnami/etcd
+    container_name: etcd
+    ports:
+    - '2379:2379'
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+    volumes:
+      - etcd_data:/bitnami/etcd
+
+  redis:
+    image: bitnami/redis
+    container_name: redis
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+volumes:
+  mysql_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ~/data_persistence/mysql_data
+  redis_data:
+  etcd_data:
