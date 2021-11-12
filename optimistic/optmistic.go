@@ -8,7 +8,11 @@ import (
 
 type CallBack func(Lock) Lock
 
-var callBack CallBack
+var callBack = func(lock Lock) Lock {
+	bizModel := lock.(*Optimistic)
+	bizModel.Amount += 10
+	return bizModel
+}
 
 type Lock interface {
 	GetVersion() int64
@@ -59,10 +63,5 @@ func Update() error {
 	config.Db.First(&optimistic)
 	optimistic.Amount += 10
 
-	callBack = func(lock Lock) Lock {
-		bizModel := lock.(*Optimistic)
-		bizModel.Amount += 10
-		return bizModel
-	}
 	return UpdateWithOptimistic(config.Db, &optimistic, callBack, 0, config.MaxRetry)
 }

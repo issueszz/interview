@@ -18,6 +18,7 @@ func NewConfig(maxRetry int64) *Config {
 	}
 	// 迁移数据库
 	db.AutoMigrate(Optimistic{})
+
 	return &Config{
 		Db:       db,
 		MaxRetry: maxRetry,
