@@ -50,7 +50,7 @@
 - 乐观锁：用数据版本（Version）记录机制实现，这是乐观锁最常用的一种方式。何谓数据版本？一般是通过为数据表增加一个数字类型的字段version来实现。
 读取数据时将version取出，更新数据时将version+1。向数据库提交更新数据时，判断数据库记录version值与之前取出的version值是否一致，如一致则更新， 
   否则失败。
-  [乐观锁源代码golang版本](./optimistic/optimistic_test.go)
+  [乐观锁源代码golang版本](./optimistic/optmistic.go)
 #### 内链接和外链接的区别
 
 #### varchar与char的区别
