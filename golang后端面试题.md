@@ -103,6 +103,7 @@ func main()  {
 
 ### 协程
 #### GMP模型以及数量关系
+[Golang调度器GMP原理与调度全分析](https://learnku.com/articles/41728)
 1. GMP模型
 ![GMP模型](./statics/GMP模型.jpeg)
     - G: goroutine协程
